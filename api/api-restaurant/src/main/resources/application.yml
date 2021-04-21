@@ -1,0 +1,23 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: "jdbc:redshift://${datasourceHostname}:5439/delta_lake?ssl=true"
+    username: awsuser
+    password: br0sil2020BFHn83Nj3f
+    driver-class-name: com.amazon.redshift.jdbc41.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL82Dialect
+#debug: true
+#
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        data:
+#          jpa:
+#            client:
+#              WIRE: trace

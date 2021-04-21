@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "spring.datasource.host",
+      "type": "java.lang.String",
+      "description": "Description for spring.datasource.host."
+    },
+    {
+      "name": "spring.datasource.database",
+      "type": "java.lang.String",
+      "description": "Description for spring.datasource.database."
+    },
+    {
+      "name": "spring.datasource.port",
+      "type": "java.lang.String",
+      "description": "Description for spring.datasource.port."
+    }
+  ] }

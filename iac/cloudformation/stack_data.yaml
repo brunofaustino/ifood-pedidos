@@ -1,0 +1,165 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Provision of infrastructure for data pipeline execution on databricks with AWS.
+Parameters:
+  RedshiftSpectrumGlueCatalogARN:
+    Type: String
+    Default: arn:aws:iam::YOUR_ACCOUNT_ID:role/Databricks_Redshift_Spectrum_Glue_Catalog
+  DatabaseName:
+    Description: >-
+      The name of the first database to be created when the redshift cluster is
+      created
+    Type: String
+    Default: delta_lake
+    ConstraintDescription: must contain a-z or 0-9 only.
+  ClusterType:
+    Description: The type of the cluster
+    Type: String
+    Default: single-node
+    AllowedValues:
+      - single-node
+      - multi-node
+    ConstraintDescription: must be single-node or multi-node.
+  NumberOfNodes:
+    Description: >-
+      The number of compute nodes in the redshift cluster.  When cluster type is
+      specified as: 1) single-node, the NumberOfNodes parameter should be
+      specified as 1, 2) multi-node, the NumberOfNodes parameter should be
+      greater than 1
+    Type: Number
+    Default: '1'
+  NodeType:
+    Description: The node type to be provisioned for the redshift cluster
+    Type: String
+    Default: dc1.large
+    AllowedValues:
+      - dw1.xlarge
+      - dw1.8xlarge
+      - dw2.large
+      - dw2.8xlarge
+      - dc1.large
+      - dc1.8xlarge
+      - ds1.xlarge
+      - ds1.8xlarge
+      - ds2.xlarge
+      - ds2.8xlarge
+      - dc2.large
+    ConstraintDescription: must be a valid RedShift node type.
+  MasterUsername:
+    Description: >-
+      The user name associated with the master user account for the redshift
+      cluster that is being created
+    Type: String
+    AllowedPattern: '([a-z])([a-z]|[0-9])*'
+    NoEcho: 'true'
+    ConstraintDescription: must start with a-z and contain only a-z or 0-9.
+    Default: awsuser
+  MasterUserPassword:
+    Description: >-
+      The password associated with the aster user account for the redshift
+      cluster that is being created.
+    Type: String
+    NoEcho: 'true'
+    MinLength: '1'
+    MaxLength: '41'
+    AllowedPattern: '[a-zA-Z0-9]*'
+    ConstraintDescription: must contain only alphanumeric characters.
+    Default: 'br0sil2020BFHn83Nj3f'
+  DatabasePort:
+    Description: >-
+      The port that Redshift will listen on and that will be allowed through the
+      Security Group.
+    Type: String
+    Default: '5439'
+Conditions:
+  IsMultiNodeCluster: !Equals
+    - !Ref ClusterType
+    - multi-node
+Resources:
+  RedshiftCluster:
+    Type: 'AWS::Redshift::Cluster'
+    Properties:
+      ClusterType: !Ref ClusterType
+      NumberOfNodes: !If
+        - IsMultiNodeCluster
+        - !Ref NumberOfNodes
+        - !Ref 'AWS::NoValue'
+      NodeType: !Ref NodeType
+      DBName: !Ref DatabaseName
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      ClusterParameterGroupName: !Ref RedshiftClusterParameterGroup
+      VpcSecurityGroupIds:
+        - !Ref SecurityGroup
+      ClusterSubnetGroupName: !Ref RedshiftClusterSubnetGroup
+      PubliclyAccessible: 'true'
+      IamRoles:
+        - !Ref RedshiftSpectrumGlueCatalogARN
+  RedshiftClusterParameterGroup:
+    Type: 'AWS::Redshift::ClusterParameterGroup'
+    Properties:
+      Description: Cluster paraeter group
+      ParameterGroupFamily: redshift-1.0
+      Parameters:
+        - ParameterName: enable_user_activity_logging
+          ParameterValue: 'true'
+  RedshiftClusterSubnetGroup:
+    Type: 'AWS::Redshift::ClusterSubnetGroup'
+    Properties:
+      Description: Cluster subnet group
+      SubnetIds:
+        - !Ref Subnet
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.0.0.0/16
+  Subnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: 10.0.0.0/24
+      VpcId: !Ref VPC
+  SecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Security group
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: !Ref DatabasePort
+          ToPort: !Ref DatabasePort
+          IpProtocol: "-1"
+      VpcId: !Ref VPC
+  #########
+  myInternetGateway:
+    Type: AWS::EC2::InternetGateway
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: VPC
+      InternetGatewayId:
+        Ref: myInternetGateway
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VPC
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId:
+        Ref: PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: myInternetGateway
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: Subnet
+      RouteTableId:
+        Ref: PublicRouteTable
+Outputs:
+  ClusterEndpoint:
+    Description: Endpoint for the newly created RedShift cluster
+    Value: {"Fn::GetAtt": ["RedshiftCluster","Endpoint.Address"]}

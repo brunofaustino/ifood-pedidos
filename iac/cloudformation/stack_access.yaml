@@ -1,0 +1,197 @@
+Description: >-
+  Create permission to execute on databricks with AWS.
+Parameters:
+  InstanceProfileName:
+    Type: String
+    Default: Databricks_Glue_S3
+    Description: The name of the instance profile that this CloudFormation Template will create in the home AWS account.
+Resources:
+  CreatePolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: Policy for link aws and databricks communication
+      Path: /
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'ec2:AssociateDhcpOptions'
+              - 'ec2:AssociateIamInstanceProfile'
+              - 'ec2:AssociateRouteTable'
+              - 'ec2:AttachInternetGateway'
+              - 'ec2:AttachVolume'
+              - 'ec2:AuthorizeSecurityGroupEgress'
+              - 'ec2:AuthorizeSecurityGroupIngress'
+              - 'ec2:CancelSpotInstanceRequests'
+              - 'ec2:CreateDhcpOptions'
+              - 'ec2:CreateInternetGateway'
+              - 'ec2:CreateKeyPair'
+              - 'ec2:CreatePlacementGroup'
+              - 'ec2:CreateRoute'
+              - 'ec2:CreateSecurityGroup'
+              - 'ec2:CreateSubnet'
+              - 'ec2:CreateTags'
+              - 'ec2:CreateVolume'
+              - 'ec2:CreateVpc'
+              - 'ec2:CreateVpcPeeringConnection'
+              - 'ec2:DeleteInternetGateway'
+              - 'ec2:DeleteKeyPair'
+              - 'ec2:DeletePlacementGroup'
+              - 'ec2:DeleteRoute'
+              - 'ec2:DeleteRouteTable'
+              - 'ec2:DeleteSecurityGroup'
+              - 'ec2:DeleteSubnet'
+              - 'ec2:DeleteTags'
+              - 'ec2:DeleteVolume'
+              - 'ec2:DeleteVpc'
+              - 'ec2:DescribeAvailabilityZones'
+              - 'ec2:DescribeIamInstanceProfileAssociations'
+              - 'ec2:DescribeInstanceStatus'
+              - 'ec2:DescribeInstances'
+              - 'ec2:DescribePlacementGroups'
+              - 'ec2:DescribePrefixLists'
+              - 'ec2:DescribeReservedInstancesOfferings'
+              - 'ec2:DescribeRouteTables'
+              - 'ec2:DescribeSecurityGroups'
+              - 'ec2:DescribeSpotInstanceRequests'
+              - 'ec2:DescribeSpotPriceHistory'
+              - 'ec2:DescribeSubnets'
+              - 'ec2:DescribeVolumes'
+              - 'ec2:DescribeVpcs'
+              - 'ec2:DetachInternetGateway'
+              - 'ec2:DisassociateIamInstanceProfile'
+              - 'ec2:ModifyVpcAttribute'
+              - 'ec2:ReplaceIamInstanceProfileAssociation'
+              - 'ec2:RequestSpotInstances'
+              - 'ec2:RevokeSecurityGroupEgress'
+              - 'ec2:RevokeSecurityGroupIngress'
+              - 'ec2:RunInstances'
+              - 'ec2:TerminateInstances'
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - 'iam:CreateServiceLinkedRole'
+              - 'iam:PutRolePolicy'
+            Resource: 'arn:aws:iam::*:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot'
+            Condition:
+              StringLike:
+                'iam:AWSServiceName': 'spot.amazonaws.com'
+          - Effect: Allow
+            Action:
+              - 'iam:PassRole'
+            Resource: 'arn:aws:iam::*:role/Databricks_Glue_S3'
+
+      ManagedPolicyName: Databricks
+
+  DatabricksGlueS3:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      RoleName: "Databricks_Glue_S3"
+  RolePolicies:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "root_Databricks_Glue_S3"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - 'glue:BatchCreatePartition'
+              - 'glue:UpdateDatabase'
+              - 'glue:CreateTable'
+              - 'glue:UpdateUserDefinedFunction'
+              - 'glue:DeleteDatabase'
+              - 'glue:GetTables'
+              - 'glue:GetPartitions'
+              - 'glue:BatchDeletePartition'
+              - 'glue:UpdateTable'
+              - 'glue:BatchGetPartition'
+              - 'glue:DeleteTable'
+              - 'glue:CreateUserDefinedFunction'
+              - 'glue:GetDatabases'
+              - 'glue:DeleteUserDefinedFunction'
+              - 'glue:GetTable'
+              - 'glue:GetDatabase'
+              - 'glue:GetPartition'
+              - 'glue:GetUserDefinedFunction'
+              - 'glue:CreateDatabase'
+              - 'glue:GetUserDefinedFunctions'
+              - 'glue:DeletePartition'
+              - 'glue:UpdatePartition'
+            Resource: "*"
+          - Effect: "Allow"
+            Action:
+              - 's3:*'
+            Resource: '*'
+      Roles:
+        - !Ref DatabricksGlueS3
+
+  RedshiftSpectrumGlueRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "redshift.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      RoleName: "Databricks_Redshift_Spectrum_Glue_Catalog"
+  RedshiftSpectrumGluePolicies:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "root_Databricks_Redshift_Spectrum_Glue_Catalog"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - 'glue:CreateDatabase'
+              - 'glue:DeleteDatabase'
+              - 'glue:GetDatabase'
+              - 'glue:GetDatabases'
+              - 'glue:UpdateDatabase'
+              - 'glue:CreateTable'
+              - 'glue:DeleteTable'
+              - 'glue:BatchDeleteTable'
+              - 'glue:UpdateTable'
+              - 'glue:GetTable'
+              - 'glue:GetTables'
+              - 'glue:BatchCreatePartition'
+              - 'glue:CreatePartition'
+              - 'glue:DeletePartition'
+              - 'glue:BatchDeletePartition'
+              - 'glue:UpdatePartition'
+              - 'glue:GetPartition'
+              - 'glue:GetPartitions'
+              - 'glue:BatchGetPartition'
+              - 'lakeformation:GetDataAccess'
+            Resource: "*"
+          - Effect: "Allow"
+            Action:
+              - 's3:Get*'
+              - 's3:List*'
+            Resource: '*'
+      Roles:
+        - !Ref RedshiftSpectrumGlueRole
+  MyInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+        - Ref: "DatabricksGlueS3"
+      InstanceProfileName: !Ref InstanceProfileName
