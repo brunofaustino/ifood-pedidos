@@ -188,6 +188,7 @@ Vamos utilizar o Cloudformation para o provisionamento do ambiente na AWS. Todos
     ```bash
     python iac/redshift/app.py --endpoint-redshift "YOUR_REDSHIFT_ENDPOINT" --aws-account-id "YOUR_ACCOUNT_ID" --aws-s3-bucket "YOUR_BUCKET_NAME"
     ```
+    > Exemplo: python iac/redshift/app.py --endpoint-redshift "stack-data-redshiftcluster-1n18jdnczvt.crmu3ndu7d.us-west-2.redshift.amazonaws.com" --aws-account-id "123456789123" --aws-s3-bucket "bucket-xyz2021"
 
     
 ## :white_check_mark: Execução
@@ -215,6 +216,7 @@ Após o término da execução do pipeline ETL os dados estão disponíveis no r
     ```bash
     docker run -p 8082:8082 -e REDSHIFT_ENDPOINT=<REDSHIFT_ENDPOINT> bfamorim/api-restaurant:1.0
     ```
+    > Exemplo: docker run -p 8082:8082 -e REDSHIFT_ENDPOINT=stack-data-redshiftcluster-1n1k153xc0czvt.crdmkp74267d.us-west-2.redshift.amazonaws.com bfamorim/api-restaurant:1.0
 
 - Requisições:
     - Contagem por dia para o estado de São Paulo:
