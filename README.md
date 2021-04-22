@@ -91,6 +91,7 @@ A combinação Delta Lake + pseudonymous_id + Glue Catalog facilita o mapeamento
     - Glue Catalog
     - Cloudformation
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html)
+* [Python 3.x](https://www.python.org/downloads/)
              
 ## Criando o ambiente
 
@@ -183,6 +184,16 @@ Vamos utilizar o Cloudformation para o provisionamento do ambiente na AWS. Todos
     - Instalação Library:
     ![image](https://files-github-projects-bfa.s3.amazonaws.com/criar-cluster-4-install-library.png)
         > pycrypto==2.6.1
+
+- Instalando dependências python.
+    ```bash
+    sudo apt update
+    sudo apt install python3-pip
+    ```
+    ```bash
+    sudo apt-get install libpq-dev
+    pip3 install psycopg2==2.8.6
+    ```
 
 - Criação das tabelas no redshift:
     ```bash
