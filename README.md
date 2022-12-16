@@ -195,7 +195,7 @@ Let's use CloudFormation for the provision of the environment at AWS. All templa
     > Exemplo: python iac/redshift/app.py --endpoint-redshift "stack-data-redshiftcluster-1n18jdnczvt.crmu3ndu7d.us-west-2.redshift.amazonaws.com" --aws-account-id "123456789123" --aws-s3-bucket "bucket-xyz2021"
 
     
-## :white_check_mark: Execução
+## :white_check_mark: Running
 
 After provisioning the environment, the notebook containing the Pipeline ETL is ready for execution in the [Databricks](https://databricks.com/):
 
