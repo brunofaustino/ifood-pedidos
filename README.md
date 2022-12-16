@@ -1,6 +1,6 @@
 # iFood Data Engineer test
 
-## Introdução
+## Introduction
 
 This project is a proposal for a solution to create an iFood order data processing environment. More information on: [iFood Test](https://github.com/ifood/ifood-data-engineering-test)
 
