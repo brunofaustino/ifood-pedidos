@@ -41,7 +41,7 @@ Finally, all information related to orders is loaded to the Gold Layer to be con
 
 ## Pseudonimização
 
-A [LGPD] (http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm) treats pseudonymization as:
+A [LGPD](http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm) treats pseudonymization as:
 _"treatment through which data loses the possibility of a direct or indirect association to an individual, if not by the use of additional information maintained separately by the controller in a controlled and secure environment."_
 
 ![image](https://files-github-projects-bfa.s3.amazonaws.com/fluxo-criptografia-resized.jpg.png)
