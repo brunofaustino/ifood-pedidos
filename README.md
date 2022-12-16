@@ -20,7 +20,7 @@ Lake Delta layers:
 - Silver: Clean and transformed data
 - Gold: refined data
 
-## Fluxo das tabelas
+## Data Flow
 
 Before the ingestion in Delta Lake's bronze layer, the data is pseudonymized by generating a new table (lookup table) to store *separately* personal data.
 Then the information is saved in a raw state in the bronze layer.
@@ -37,9 +37,9 @@ Finally, all information related to orders is loaded to the Gold Layer to be con
 
 ---
 
-# Privacidade, Compliance e LGPD/GDPR
+# Privacy, Compliance and LGPD/GDPR
 
-## Pseudonimização
+## Pseudonimization
 
 A [LGPD](http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm) treats pseudonymization as:
 _"treatment through which data loses the possibility of a direct or indirect association to an individual, if not by the use of additional information maintained separately by the controller in a controlled and secure environment."_
@@ -64,7 +64,7 @@ The GDPR encourages us to [pseudonimize data as soon as possible](https://www.pr
 
 ![image](https://files-github-projects-bfa.s3.amazonaws.com/lookup-table.png)
 
-## Governança de dados
+## Data Governance
 
 - Once personal data is isolated, we can easily create access policies, for example, blocking users' access to directory data where personal data (Delta_lake/Lookup/Consumer_order/) will be saved. As well as the implementation of access controls for the tables (which can be linked with identity providers).
 
@@ -75,9 +75,9 @@ The Combination Delta Lake + Pseudonymous_id + Glue Catalog facilitates data map
 
 ---
 
-# Pipeline ETL
+# ETL Pipeline
 
-## Requerimentos
+## Requirements
 
 * [Databricks](https://databricks.com/product/aws-pricing) Standard Plan ou superior
 * [Amazon AWS](https://aws.amazon.com/pt/)
@@ -88,7 +88,7 @@ The Combination Delta Lake + Pseudonymous_id + Glue Catalog facilitates data map
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html)
 * [Python 3.x](https://www.python.org/downloads/)
              
-## Criando o ambiente
+## Creating the Environment
 
 ### Amazon AWS
 
